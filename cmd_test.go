@@ -25,27 +25,27 @@ func TestByVersion(t *testing.T) {
 		{
 			name:  "major versions",
 			input: []string{"v3.0", "v1.0", "v2.0"},
-			want:  []string{"v1.0", "v2.0", "v3.0"},
+			want:  []string{"v3.0", "v2.0", "v1.0"},
 		},
 		{
 			name:  "minor versions",
 			input: []string{"v0.1", "v0.3", "v0.2"},
-			want:  []string{"v0.1", "v0.2", "v0.3"},
+			want:  []string{"v0.3", "v0.2", "v0.1"},
 		},
 		{
 			name:  "minor versions padding",
 			input: []string{"v0.1.2", "v0.1.1", "v0.1"},
-			want:  []string{"v0.1", "v0.1.1", "v0.1.2"},
+			want:  []string{"v0.1.2", "v0.1.1", "v0.1"},
 		},
 		{
 			name:  "minor versions numeric",
 			input: []string{"v1.0.19", "v1.0.2"},
-			want:  []string{"v1.0.2", "v1.0.19"},
+			want:  []string{"v1.0.19", "v1.0.2"},
 		},
 		{
 			name:  "multiple padding",
 			input: []string{"v1.0", "v2.2.2", "v2.1", "v0.0.0.999", "v3.5"},
-			want:  []string{"v0.0.0.999", "v1.0", "v2.1", "v2.2.2", "v3.5"},
+			want:  []string{"v3.5", "v2.2.2", "v2.1", "v1.0", "v0.0.0.999"},
 		},
 	}
 

@@ -561,12 +561,12 @@ func (v byVersion) Less(i, j int) bool {
 	for k := 0; k < len(v1); k++ {
 		switch {
 		case v1[k] < v2[k]:
-			return true
-		case v2[k] < v1[k]:
 			return false
+		case v2[k] < v1[k]:
+			return true
 		}
 	}
 
 	// Can only get here if they all compared equal.
-	return false
+	return true
 }
