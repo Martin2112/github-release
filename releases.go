@@ -5,8 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"strconv"
+
 	"github.com/aktau/github-release/github"
-	"github.com/dustin/go-humanize"
+	humanize "github.com/dustin/go-humanize"
 )
 
 const (
@@ -56,6 +58,32 @@ func (r *Release) String() string {
 	}
 
 	return strings.Join(str, "\n")
+}
+
+// TagVersion assumes semantic versioning and returns a slice of ints corresponding to
+// each component of the release e.g v1.2.19 -> { 1, 2, 19 }. If the release tag cannot be parsed
+// as a semantic version then an error is returned.
+func (r *Release) TagVersion() ([]int, error) {
+	tag := strings.ToLower(r.TagName)
+	if !strings.HasPrefix(tag, "v") || strings.HasSuffix(tag, ".") {
+		return nil, fmt.Errorf("not a semantic version: %v", tag)
+	}
+
+	pieces := strings.Split(strings.TrimPrefix(tag, "v"), ".")
+	if len(pieces) == 0 {
+		return nil, fmt.Errorf("not a semantic version: %v", tag)
+	}
+
+	subVersions := make([]int, 0, len(pieces))
+	for _, piece := range pieces {
+		v, err := strconv.Atoi(piece)
+		if err != nil {
+			return nil, fmt.Errorf("not a semantic version: %v", tag)
+		}
+		subVersions = append(subVersions, v)
+	}
+
+	return subVersions, nil
 }
 
 type ReleaseCreate struct {

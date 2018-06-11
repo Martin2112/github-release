@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -67,6 +68,8 @@ func infocmd(opt Options) error {
 	case opt.Info.JSON:
 		renderer = renderInfoJSON
 	case opt.Info.Markdown:
+		// Order the releases by semantic version.
+		sort.Sort(byVersion(releases))
 		renderer = renderInfoMarkdown
 		if !opt.Info.Prerelease {
 			// Exclude pre-releases unless they were requested
@@ -524,4 +527,46 @@ func deletecmd(opt Options) error {
 	}
 
 	return nil
+}
+
+type byVersion []Release
+
+func (r byVersion) Len() int {
+	return len(r)
+}
+
+func (r byVersion) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}
+
+func (v byVersion) Less(i, j int) bool {
+	v1, err := v[i].TagVersion()
+	if err != nil {
+		return false
+	}
+	v2, err := v[j].TagVersion()
+	if err != nil {
+		return false
+	}
+
+	// Pad the slices so they're the same length.
+	for len(v1) < len(v2) {
+		v1 = append(v1, 0)
+	}
+
+	for len(v2) < len(v1) {
+		v2 = append(v2, 0)
+	}
+
+	for k := 0; k < len(v1); k++ {
+		switch {
+		case v1[k] < v2[k]:
+			return true
+		case v2[k] < v1[k]:
+			return false
+		}
+	}
+
+	// Can only get here if they all compared equal.
+	return false
 }
