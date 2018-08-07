@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -114,12 +115,17 @@ func renderInfoMarkdown(repo string, tags []Tag, releases []Release) error {
 		tagMap[t.Name] = t
 	}
 
+	trailingSpaceRegexp, err := regexp.Compile("[\r\t ]+\n")
+	if err != nil {
+		return fmt.Errorf("Failed to compile trailing whitespace regexp: %v", err)
+	}
+
 	fmt.Printf("# %s Changelog\n", strings.ToTitle(repo))
 	fmt.Println()
 	for _, r := range releases {
 		fmt.Printf("## %s - %s\n\n", r.TagName, r.Name)
 		fmt.Printf("Published %s\n\n", r.Published)
-		fmt.Println(strings.Replace(r.Description, "\r\n", "\n", -1))
+		fmt.Println(trailingSpaceRegexp.ReplaceAllLiteralString(r.Description, "\n"))
 		fmt.Println()
 		if len(r.TagName) != 0 {
 			t, ok := tagMap[r.TagName]
