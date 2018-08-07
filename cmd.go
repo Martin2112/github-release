@@ -119,7 +119,7 @@ func renderInfoMarkdown(repo string, tags []Tag, releases []Release) error {
 	for _, r := range releases {
 		fmt.Printf("## %s - %s\n\n", r.TagName, r.Name)
 		fmt.Printf("Published %s\n\n", r.Published)
-		fmt.Println(r.Description)
+		fmt.Println(strings.Replace(r.Description, "\r\n", "\n", -1))
 		fmt.Println()
 		if len(r.TagName) != 0 {
 			t, ok := tagMap[r.TagName]
